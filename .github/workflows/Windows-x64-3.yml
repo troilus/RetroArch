@@ -1,4 +1,4 @@
-name: CI Windows x64 (MXE)
+name: CI Windows x64 (MXE) -3
 
 on:
   push:
