@@ -76,10 +76,10 @@ static void command_post_state_loaded(void)
 #ifdef HAVE_CHEEVOS
    if (rcheevos_hardcore_active())
    {
-      const char *_msg = msg_hash_to_str(MSG_CHEEVOS_HARDCORE_MODE_DISABLED);
-      rcheevos_pause_hardcore();
-      runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
-            MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
+      //const char *_msg = msg_hash_to_str(MSG_CHEEVOS_HARDCORE_MODE_DISABLED);
+      //rcheevos_pause_hardcore();
+      //runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
+      //      MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
    }
 #endif
 #ifdef HAVE_NETWORKING
@@ -1428,8 +1428,8 @@ bool command_event_load_entry_state(settings_t *settings)
       return false;
 
 #ifdef HAVE_CHEEVOS
-   if (rcheevos_hardcore_active())
-      return false;
+   //if (rcheevos_hardcore_active())
+   //   return false;
 #endif
 #ifdef HAVE_NETWORKING
    if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))
@@ -1477,8 +1477,8 @@ bool command_event_load_auto_state(void)
       return false;
 
 #ifdef HAVE_CHEEVOS
-   if (rcheevos_hardcore_active())
-      return false;
+   //if (rcheevos_hardcore_active())
+   //   return false;
 #endif
 #ifdef HAVE_NETWORKING
    if (netplay_driver_ctl(RARCH_NETPLAY_CTL_IS_ENABLED, NULL))

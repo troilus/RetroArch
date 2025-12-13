@@ -1,0 +1,47 @@
+name: CI iOS  
+  
+on:  
+  push:  
+    branches: [ main ]  
+  pull_request:  
+    branches: [ main ]  
+  workflow_dispatch:  # 允许手动触发
+  
+jobs:  
+  build:  
+    runs-on: macos-latest  
+      
+    steps:  
+    - uses: actions/checkout@v3  
+      
+    - name: Build libretro cores  
+      run: |  
+        ./libretro-fetch.sh  
+        ./libretro-build-ios.sh  
+      
+    - name: Build iOS app  
+      run: |  
+        xcodebuild -project pkg/apple/RetroArch_iOS13.xcodeproj \  
+          -destination "generic/platform=iOS" \  
+          -configuration Release \  
+          -scheme "RetroArch iOS Release" \  
+          -xcconfig pkg/apple/iOS/GitLabCI.xcconfig \  
+          build  
+      
+    - name: Archive and Export IPA  
+      run: |  
+        xcodebuild -project pkg/apple/RetroArch_iOS13.xcodeproj \  
+          -scheme "RetroArch iOS Release" \  
+          -configuration Release \  
+          -archivePath build/RetroArch.xcarchive \  
+          archive  
+            
+        xcodebuild -exportArchive \  
+          -archivePath build/RetroArch.xcarchive \  
+          -exportPath build/output \  
+          -exportOptionsPlist ExportOptions.plist  
+      
+    - uses: actions/upload-artifact@v4  
+      with:  
+        name: RetroArch-iOS  
+        path: build/output/*.ipa

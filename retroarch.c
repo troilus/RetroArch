@@ -3379,10 +3379,10 @@ bool command_event(enum event_command cmd, void *data)
 #ifdef HAVE_CHEEVOS
             if (rcheevos_hardcore_active())
             {
-               const char *_msg = msg_hash_to_str(MSG_CHEEVOS_LOAD_STATE_PREVENTED_BY_HARDCORE_MODE);
-               runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
-                     MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_WARNING);
-               return false;
+               //const char *_msg = msg_hash_to_str(MSG_CHEEVOS_LOAD_STATE_PREVENTED_BY_HARDCORE_MODE);
+               //runloop_msg_queue_push(_msg, strlen(_msg), 0, 180, true, NULL,
+               //      MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_WARNING);
+               //return false;
             }
 #endif
 #ifdef HAVE_NETWORKING

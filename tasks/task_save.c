@@ -748,8 +748,8 @@ static void task_load_handler(retro_task_t *task)
    }
 
 #ifdef HAVE_CHEEVOS
-   if (rcheevos_hardcore_active())
-      task_set_flags(task, RETRO_TASK_FLG_CANCELLED, true);
+   //if (rcheevos_hardcore_active())
+   //   task_set_flags(task, RETRO_TASK_FLG_CANCELLED, true);
 #endif
 
    remaining          = MIN(state->size - state->bytes_read, SAVE_STATE_CHUNK);
@@ -992,8 +992,8 @@ static void content_load_state_cb(retro_task_t *task,
    struct string_list *savefile_list = (struct string_list*)savefile_ptr_get();
 
 #ifdef HAVE_CHEEVOS
-   if (rcheevos_hardcore_active())
-      goto error;
+   //if (rcheevos_hardcore_active())
+   //   goto error;
 #endif
 
    RARCH_LOG("[State] %s \"%s\", %u %s.\n",
