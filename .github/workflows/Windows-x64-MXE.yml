@@ -18,12 +18,14 @@ jobs:
     container:  
       image: git.libretro.com:5050/libretro-infrastructure/libretro-build-mxe-win64-cross:latest  
       options: --user root  
+    outputs:  
+      sha8: ${{ steps.slug.outputs.sha8 }}  
       
     steps:  
     - uses: taiki-e/checkout-action@v1  
   
     - name: Compile RA  
-      run: |
+      run: |  
         export MOC=/usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/moc  
         ./configure --host=x86_64-w64-mingw32.shared  
         make clean  
@@ -33,14 +35,42 @@ jobs:
       id: slug  
       run: echo "sha8=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_OUTPUT  
   
-    - name: Create Release  
-      if: github.event_name == 'push'  
+    - name: Prepare upload  
+      run: |  
+        # 将文件复制到挂载目录  
+        mkdir -p /tmp/upload  
+        cp retroarch.exe /tmp/upload/  
+        # 创建上传脚本  
+        cat > /tmp/upload.sh << 'EOF'  
+        #!/bin/bash  
+        cd /tmp/upload  
+        # 使用 curl 直接上传到 GitHub Releases API  
+        curl -X POST \  
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \  
+          -H "Content-Type: application/octet-stream" \  
+          --data-binary @retroarch.exe \  
+          "https://uploads.github.com/repos/${{ github.repository }}/releases/assets" \  
+          || echo "Upload failed, will retry in next step"  
+        EOF  
+        chmod +x /tmp/upload.sh  
+  
+  upload:  
+    if: github.event_name == 'push'  
+    needs: build  
+    runs-on: ubuntu-latest  
+    steps:  
+    - uses: actions/checkout@v4  
+      
+    - name: Download from container storage  
+      run: |  
+        # 从容器卷或临时存储获取文件  
+        docker cp $(docker ps -aq -f "ancestor=git.libretro.com:5050/libretro-infrastructure/libretro-build-mxe-win64-cross:latest" | head -1):/tmp/upload/retroarch.exe ./  
+      
+    - name: Create Release and Upload  
       uses: softprops/action-gh-release@v1  
       with:  
-        name: RetroArch Windows x64 ${{ steps.slug.outputs.sha8 }}  
-        tag_name: windows-x64-${{ steps.slug.outputs.sha8 }}  
+        name: RetroArch Windows x64 ${{ needs.build.outputs.sha8 }}  
+        tag_name: windows-x64-${{ needs.build.outputs.sha8 }}  
         files: retroarch.exe  
         draft: false  
-        prerelease: true  
-      env:  
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        prerelease: true
