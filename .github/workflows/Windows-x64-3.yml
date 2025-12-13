@@ -1,38 +1,58 @@
-name: CI Windows x643 (MXE)  
-  
-on:  
-  push:  
-    branches: [main]  # 只在主分支触发  
-  workflow_dispatch:  # 手动触发  
-  
-permissions:  
-  contents: write  # 需要写入权限  
-  
-jobs:  
-  build:  
-    runs-on: ubuntu-latest  
-    container:  
-      image: git.libretro.com:5050/libretro-infrastructure/libretro-build-mxe-win64-cross:latest  
-      options: --user root  
+name: CI Windows x64 (MXE)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # 需要写入权限
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: git.libretro.com:5050/libretro-infrastructure/libretro-build-mxe-win64-cross:latest
+      options: --user root
       
-    steps:  
-    - uses: taiki-e/checkout-action@v1  
-      with:  
-        token: ${{ secrets.GITHUB_TOKEN }}  # 需要token才能推送  
-  
-    - name: Compile RA  
-      run: |  
-        export MOC=/usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/moc  
-        ./configure --host=x86_64-w64-mingw32.shared  
-        make clean  
-        make -j$(getconf _NPROCESSORS_ONLN)  
-  
-    - name: Commit and push binary  
-      run: |  
-        git config --local user.email "action@github.com"  
-        git config --local user.name "GitHub Action"  
-        mkdir -p builds/windows-x64  
-        cp retroarch builds/windows-x64/  
+    steps:
+    - name: Checkout repository
+      uses: taiki-e/checkout-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        persist-credentials: false  # 关键：关闭默认凭据持久化
+
+    - name: Compile RetroArch
+      run: |
+        export MOC=/usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/bin/moc
+        ./configure --host=x86_64-w64-mingw32.shared
+        make clean
+        make -j$(getconf _NPROCESSORS_ONLN)
+
+    - name: Commit and push binary
+      run: |
+        # 设置用户信息
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # 关键：显式设置带 token 的远程 URL
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        
+        # 调试信息
+        echo "Repository: ${{ github.repository }}"
+        echo "Remote URL set to:"
+        git remote -v
+        
+        # 创建目录并复制编译结果
+        mkdir -p builds/windows-x64
+        cp retroarch builds/windows-x64/
+        
+        # 添加并提交文件
         git add builds/windows-x64/retroarch
-        git commit -m "Auto-update Windows x64 build" || exit 0  
-        git push
+        git commit -m "Auto-update Windows x64 build" || exit 0
+        
+        # 推送更改
+        echo "Pushing to repository..."
+        git push origin HEAD:main
+        
+        echo "Push completed successfully!"
