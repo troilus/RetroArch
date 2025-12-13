@@ -32,3 +32,11 @@ jobs:
     - name: Get short SHA
       id: slug
       run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: myapp-windows-${{ steps.slug.outputs.sha8 }}
+        path: |
+          **/*.exe
+          **/*.dll
+        if-no-files-found: error
