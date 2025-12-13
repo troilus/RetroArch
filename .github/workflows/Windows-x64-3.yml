@@ -32,7 +32,7 @@ jobs:
         git config --local user.email "action@github.com"  
         git config --local user.name "GitHub Action"  
         mkdir -p builds/windows-x64  
-        cp retroarch.exe builds/windows-x64/  
-        git add builds/windows-x64/retroarch.exe  
+        cp retroarch builds/windows-x64/  
+        git add builds/windows-x64/retroarch
         git commit -m "Auto-update Windows x64 build" || exit 0  
         git push

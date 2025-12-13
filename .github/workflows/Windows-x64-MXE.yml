@@ -39,7 +39,7 @@ jobs:
       run: |  
         # 将文件复制到挂载目录  
         mkdir -p /tmp/upload  
-        cp retroarch.exe /tmp/upload/  
+        cp retroarch /tmp/upload/  
         # 创建上传脚本  
         cat > /tmp/upload.sh << 'EOF'  
         #!/bin/bash  
@@ -48,7 +48,7 @@ jobs:
         curl -X POST \  
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \  
           -H "Content-Type: application/octet-stream" \  
-          --data-binary @retroarch.exe \  
+          --data-binary @retroarch \  
           "https://uploads.github.com/repos/${{ github.repository }}/releases/assets" \  
           || echo "Upload failed, will retry in next step"  
         EOF  
@@ -71,6 +71,6 @@ jobs:
       with:  
         name: RetroArch Windows x64 ${{ needs.build.outputs.sha8 }}  
         tag_name: windows-x64-${{ needs.build.outputs.sha8 }}  
-        files: retroarch.exe  
+        files: retroarch
         draft: false  
         prerelease: true
