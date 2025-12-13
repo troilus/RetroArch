@@ -7,7 +7,7 @@ on:
     types: [run_build]  
   
 permissions:  
-  contents: read  
+  contents: write  
   
 env:  
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true  
@@ -18,9 +18,6 @@ jobs:
     container:  
       image: git.libretro.com:5050/libretro-infrastructure/libretro-build-mxe-win64-cross:latest  
       options: --user root  
-    outputs:  
-      sha8: ${{ steps.slug.outputs.sha8 }}  
-      cache-key: ${{ steps.cache-key.outputs.key }}  
       
     steps:  
     - uses: taiki-e/checkout-action@v1  
@@ -36,30 +33,14 @@ jobs:
       id: slug  
       run: echo "sha8=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_OUTPUT  
   
-    - name: Generate cache key  
-      id: cache-key  
-      run: echo "key=retroarch-${{ steps.slug.outputs.sha8 }}-${{ github.run_id }}" >> $GITHUB_OUTPUT  
-  
-    - name: Cache build artifact  
-      uses: actions/cache@v4  
+    - name: Create Release  
+      if: github.event_name == 'push'  
+      uses: softprops/action-gh-release@v1  
       with:  
-        path: retroarch.exe  
-        key: ${{ steps.cache-key.outputs.key }}  
-  
-  upload:  
-    needs: build  
-    runs-on: ubuntu-latest  
-    steps:  
-    - uses: actions/checkout@v4  
-      
-    - name: Restore cached artifact  
-      uses: actions/cache@v4  
-      with:  
-        path: retroarch.exe  
-        key: ${{ needs.build.outputs.cache-key }}  
-          
-    - name: Upload build artifacts  
-      uses: actions/upload-artifact@v4  
-      with:  
-        name: retroarch-x64-${{ needs.build.outputs.sha8 }}  
-        path: retroarch.exe
+        name: RetroArch Windows x64 ${{ steps.slug.outputs.sha8 }}  
+        tag_name: windows-x64-${{ steps.slug.outputs.sha8 }}  
+        files: retroarch.exe  
+        draft: false  
+        prerelease: true  
+      env:  
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
