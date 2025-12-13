@@ -27,3 +27,12 @@ jobs:
         make clean  
         make -j$(getconf _NPROCESSORS_ONLN)  
   
+    - name: Commit and push binary  
+      run: |  
+        git config --local user.email "action@github.com"  
+        git config --local user.name "GitHub Action"  
+        mkdir -p builds/windows-x64  
+        cp retroarch.exe builds/windows-x64/  
+        git add builds/windows-x64/retroarch.exe  
+        git commit -m "Auto-update Windows x64 build" || exit 0  
+        git push
