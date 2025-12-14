@@ -81,6 +81,7 @@ jobs:
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}  
           
         mkdir -p releases/windows-x64  
+        git pull origin main
         # 只提交 portable 包
         cp retroarch-windows-x64-portable.zip releases/windows-x64/  
           
