@@ -84,6 +84,6 @@ jobs:
         # 只提交 portable 包
         cp retroarch-windows-x64-portable.zip releases/windows-x64/  
           
-        git add releases/windows-x64/retroarch-windows-x64-portable.zip  
+        git add -f releases/windows-x64/retroarch-windows-x64-portable.zip  
         git commit -m "Update Windows x64 portable build - $(date +'%Y-%m-%d')" || exit 0  
         git push origin HEAD:main
