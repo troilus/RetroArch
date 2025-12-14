@@ -61,18 +61,8 @@ jobs:
   
     - name: Copy DLL dependencies  
       run: |  
-        /bin/bash /usr/lib/mxe/tools/copydlldeps.sh \  
-            --infile retroarch.exe \  
-            -d retroarch-portable/redist/ \  
-            --recursivesrcdir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/ \  
-            --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/bearer/ \  
-            --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/iconengines/ \  
-            --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/imageformats/ \  
-            --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platforms/ \  
-            --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/styles/ \  
-            --copy \  
-            --objdump x86_64-w64-mingw32.shared-objdump  
-          
+        /bin/bash /usr/lib/mxe/tools/copydlldeps.sh -c -d retroarch-portable/redist/ -R /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/ -e /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/bearer/ -e /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/iconengines/ -e /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/imageformats/ -e /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/platforms/ -e /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/styles/ -f retroarch.exe
+        
         # Copy NVDA controller for accessibility  
         cp -f nvdaControllerClient64.dll retroarch-portable/redist/ 2>/dev/null || true  
           
