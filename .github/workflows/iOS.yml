@@ -60,7 +60,7 @@ jobs:
           # Ensure we're using relative paths
           export BASE_DIR="iOS"
           # Skip code signing for TrollStore
-          export CODE_SIGN_IDENTITY_FOR_ITEMS="-"
+          export CODE_SIGN_IDENTITY_FOR_ITEMS=""
           ./make-frameworks.sh
   
       - name: Verify frameworks created
