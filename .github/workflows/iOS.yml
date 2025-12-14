@@ -42,6 +42,7 @@ jobs:
           ./update-cores.sh --ios
           
       - name: Process cores into frameworks
+        working-directory: pkg/apple
         run: |
           cd pkg/apple
           ./make-frameworks.sh
