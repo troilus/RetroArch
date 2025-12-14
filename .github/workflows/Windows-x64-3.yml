@@ -75,7 +75,6 @@ jobs:
         zip -r ../retroarch-windows-x64-portable.zip .
   
     - name: Commit and push portable package (optional)
-      if: github.event_name == 'push'
       run: |
         git config --local user.email "action@github.com"  
         git config --local user.name "GitHub Action"  
