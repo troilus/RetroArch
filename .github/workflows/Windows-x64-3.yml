@@ -74,15 +74,17 @@ jobs:
         cd retroarch-portable
         zip -r ../retroarch-windows-x64-portable.zip .
   
-    - name: Commit and push binary (optional)
+    - name: Commit and push portable package (optional)
+      if: github.event_name == 'push'
       run: |
         git config --local user.email "action@github.com"  
         git config --local user.name "GitHub Action"  
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}  
           
-        mkdir -p builds/windows-x64  
-        cp retroarch.exe builds/windows-x64/  
+        mkdir -p releases/windows-x64  
+        # 只提交 portable 包
+        cp retroarch-windows-x64-portable.zip releases/windows-x64/  
           
-        git add builds/windows-x64/retroarch.exe  
-        git commit -m "Auto-update Windows x64 build" || exit 0  
+        git add releases/windows-x64/retroarch-windows-x64-portable.zip  
+        git commit -m "Update Windows x64 portable build - $(date +'%Y-%m-%d')" || exit 0  
         git push origin HEAD:main
