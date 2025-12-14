@@ -63,7 +63,7 @@ jobs:
       run: |  
         /bin/bash /usr/lib/mxe/tools/copydlldeps.sh \  
             --infile retroarch.exe \  
-            --destdir retroarch-portable/redist/ \  
+            -d retroarch-portable/redist/ \  
             --recursivesrcdir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/ \  
             --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/bearer/ \  
             --enforcedir /usr/lib/mxe/usr/x86_64-w64-mingw32.shared/qt5/plugins/iconengines/ \  
