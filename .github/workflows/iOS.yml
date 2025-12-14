@@ -99,6 +99,7 @@ jobs:
       - name: Copy frameworks to app bundle
         run: |
           cd pkg/apple
+          rm -rf build/Release-iphoneos/RetroArch.app/modules/
           # Ensure the target Frameworks directory exists in the app bundle
           mkdir -p build/Release-iphoneos/RetroArch.app/Frameworks/
           # Copy all frameworks
