@@ -35,10 +35,15 @@ jobs:
             sudo ln -s $PWD/retroarch-apple-deps /usr/local/share  
           fi  
   
-      - name: Download pre-built iOS cores  
-        run: |  
-          cd pkg/apple  
-          ./update-cores.sh --ios  
+      - name: Download pre-built iOS cores
+        run: |
+          cd pkg/apple
+          ./update-cores.sh --ios
+          
+      - name: Process cores into frameworks
+        run: |
+          cd pkg/apple
+          ./make-frameworks.sh
   
       - name: Configure for TrollStore (no signing)  
         run: |  
