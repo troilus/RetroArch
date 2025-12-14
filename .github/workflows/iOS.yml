@@ -36,10 +36,23 @@ jobs:
           # 创建符号链接（如果不存在）
           sudo ln -sf $PWD/retroarch-apple-deps /usr/local/share/retroarch-apple-deps
 
-      - name: Download pre-built iOS cores
-        run: |
-          cd pkg/apple
-          ./update-cores.sh --ios
+      - name: Download pre-built iOS cores  
+        run: |  
+          cd pkg/apple  
+          # Clean any existing cores first  
+          rm -f iOS/modules/*.dylib  
+          # Download all available cores  
+          ./update-cores.sh --ios all
+          
+      - name: Verify cores downloaded  
+        run: |  
+          cd pkg/apple  
+          echo "Number of dylib files downloaded:"  
+          ls -1 iOS/modules/*.dylib | wc -l  
+          if [ $(ls -1 iOS/modules/*.dylib 2>/dev/null | wc -l) -eq 0 ]; then  
+            echo "Error: No cores were downloaded"  
+            exit 1  
+          fi
           
       - name: Process cores into frameworks
         run: |
