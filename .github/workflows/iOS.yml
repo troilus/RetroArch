@@ -44,7 +44,6 @@ jobs:
       - name: Process cores into frameworks
         working-directory: pkg/apple
         run: |
-          cd pkg/apple
           ./make-frameworks.sh
   
       - name: Configure for TrollStore (no signing)  
