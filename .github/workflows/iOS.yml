@@ -22,19 +22,20 @@ jobs:
         with:  
           xcode-version: latest-stable  
   
-      - name: Cache retroarch-apple-deps  
-        uses: actions/cache@v3  
-        with:  
-          path: /usr/local/share/retroarch-apple-deps  
-          key: ${{ runner.os }}-retroarch-apple-deps-v1  
-  
-      - name: Install retroarch-apple-deps  
-        run: |  
-          if [ ! -d "/usr/local/share/retroarch-apple-deps" ]; then  
-            git clone https://github.com/warmenhoven/retroarch-apple-deps.git retroarch-apple-deps  
-            sudo ln -s $PWD/retroarch-apple-deps /usr/local/share  
-          fi  
-  
+      - name: Cache retroarch-apple-deps
+        uses: actions/cache@v3
+        with:
+          path: ./retroarch-apple-deps
+          key: ${{ runner.os }}-retroarch-apple-deps-v1
+
+      - name: Install retroarch-apple-deps
+        run: |
+          if [ ! -d "./retroarch-apple-deps" ]; then
+            git clone https://github.com/warmenhoven/retroarch-apple-deps.git retroarch-apple-deps
+          fi
+          # 创建符号链接（如果不存在）
+          sudo ln -sf $PWD/retroarch-apple-deps /usr/local/share/retroarch-apple-deps
+
       - name: Download pre-built iOS cores
         run: |
           cd pkg/apple
