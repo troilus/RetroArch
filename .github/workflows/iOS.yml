@@ -42,7 +42,7 @@ jobs:
           # Clean any existing cores first
           rm -f iOS/modules/*.dylib
           # Download all available cores
-          ./update-cores.sh --ios all
+          ./update-cores.sh --ios mgba sameboy dolphin melonds skyemu snes9x ppsspp mesen
   
       - name: Verify cores downloaded
         run: |
