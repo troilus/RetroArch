@@ -74,8 +74,25 @@ jobs:
       - name: Copy frameworks to app bundle
         run: |
           cd pkg/apple
-          # Copy frameworks into the built app
-          cp -r iOS/Frameworks/* build/Release-iphoneos/RetroArch.app/Frameworks/
+          # Debug: Check if frameworks were created
+          echo "Contents of iOS directory:"
+          ls -la iOS/
+          echo ""
+          echo "Contents of iOS/Frameworks directory:"
+          ls -la iOS/Frameworks/ || echo "iOS/Frameworks does not exist"
+          echo ""
+          echo "Contents of iOS/modules directory:"
+          ls -la iOS/modules/ | head -10
+            
+          # Ensure the target Frameworks directory exists in the app bundle
+          mkdir -p build/Release-iphoneos/RetroArch.app/Frameworks/
+            
+          # Copy frameworks if they exist
+          if [ -d "iOS/Frameworks" ] && [ "$(ls -A iOS/Frameworks/)" ]; then
+            cp -r iOS/Frameworks/* build/Release-iphoneos/RetroArch.app/Frameworks/
+          else
+            echo "No frameworks found to copy"
+          fi
   
       - name: Package IPA for TrollStore
         run: |
