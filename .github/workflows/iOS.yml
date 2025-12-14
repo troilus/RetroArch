@@ -45,8 +45,10 @@ jobs:
         run: |  
           cd libretro-super  
           ./libretro-fetch.sh --retroarch  
-          PLATFORM=ios ./libretro-build-ios-arm64.sh  
-          cp -r dist/ios-arm64/*.dylib ../RetroArch/pkg/apple/iOS/modules/  
+          # Use the correct iOS build script with proper environment  
+          export platform=ios-arm64  
+          ./libretro-build-ios-arm64.sh  
+          cp -r dist/ios-arm64/*.dylib ../RetroArch/pkg/apple/iOS/modules/
   
       - name: Configure for TrollStore (no signing)  
         run: |  
