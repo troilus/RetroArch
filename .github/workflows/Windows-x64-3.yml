@@ -33,16 +33,10 @@ jobs:
     - name: Build and copy filters  
       run: |  
         # Build audio filters  
-        cd libretro-common/audio/dsp_filters && \  
-        make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release && \  
-        make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release strip && \  
-        cd -  
+        cd libretro-common/audio/dsp_filters && make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release && make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release strip && cd -  
           
-        # Build video filters  
-        cd gfx/video_filters && \  
-        make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release && \  
-        make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release strip && \  
-        cd -  
+        # Build video filters    
+        cd gfx/video_filters && make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release && make -j$(getconf _NPROCESSORS_ONLN) platform=win compiler=x86_64-w64-mingw32.static-gcc build=release strip && cd -  
   
     - name: Create portable package structure  
       run: |  
