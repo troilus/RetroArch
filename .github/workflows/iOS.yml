@@ -41,9 +41,11 @@ jobs:
           cd pkg/apple
           ./update-cores.sh --ios
           
-      - name: Process cores into frameworks
-        working-directory: pkg/apple
-        run: |
+      - name: Process cores into frameworks  
+        run: |  
+          cd pkg/apple  
+          # Ensure we're using relative paths  
+          export BASE_DIR="iOS"  
           ./make-frameworks.sh
   
       - name: Configure for TrollStore (no signing)  
