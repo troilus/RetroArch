@@ -1,54 +1,91 @@
-name: CI iOS  
+name: Build iOS IPA (Sideloading)  
   
 on:  
-  push:  
-    branches: [ main ]  
-  pull_request:  
-    branches: [ main ]  
-  workflow_dispatch:  # 允许手动触发  
+  workflow_dispatch:  
+    inputs:  
+      bundle_id:  
+        description: 'Bundle Identifier (e.g., com.yourname.RetroArch)'  
+        required: true  
+        default: 'com.libretro.RetroArch'  
+      team_id:  
+        description: 'Apple Developer Team ID'  
+        required: true  
   
 jobs:  
-  build:  
+  build-ios:  
     runs-on: macos-latest  
-      
     steps:  
-    - uses: actions/checkout@v3  
-      
-    - name: Clone libretro-super  
-      run: |  
-        cd ..  
-        git clone https://github.com/libretro/libretro-super.git  
-      
-    - name: Build libretro cores  
-      run: |  
-        cd ../libretro-super  
-        ./libretro-fetch.sh  
-        ./libretro-build-ios.sh  
-        cp -r dist/ios/* ../RetroArch/pkg/apple/iOS/modules/  
-      
-    - name: Build iOS app  
-      run: |  
-        xcodebuild -project pkg/apple/RetroArch_iOS13.xcodeproj \  
-          -destination "generic/platform=iOS" \  
-          -configuration Release \  
-          -scheme "RetroArch iOS Release" \  
-          -xcconfig pkg/apple/iOS/GitLabCI.xcconfig \  
-          build  
-      
-    - name: Archive and Export IPA  
-      run: |  
-        xcodebuild -project pkg/apple/RetroArch_iOS13.xcodeproj \  
-          -scheme "RetroArch iOS Release" \  
-          -configuration Release \  
-          -archivePath build/RetroArch.xcarchive \  
-          archive  
+      - name: Checkout RetroArch  
+        uses: actions/checkout@v4  
+        with:  
+          submodules: recursive  
+  
+      - name: Checkout libretro-super  
+        uses: actions/checkout@v4  
+        with:  
+          repository: libretro/libretro-super  
+          path: libretro-super  
+  
+      - name: Setup Xcode  
+        uses: maxim-lobanov/setup-xcode@v1  
+        with:  
+          xcode-version: latest-stable  
+  
+      - name: Cache retroarch-apple-deps  
+        uses: actions/cache@v3  
+        with:  
+          path: /usr/local/share/retroarch-apple-deps  
+          key: ${{ runner.os }}-retroarch-apple-deps-v1  
+  
+      - name: Install retroarch-apple-deps  
+        run: |  
+          if [ ! -d "/usr/local/share/retroarch-apple-deps" ]; then  
+            git clone https://github.com/warmenhoven/retroarch-apple-deps.git retroarch-apple-deps  
+            sudo ln -s $PWD/retroarch-apple-deps /usr/local/share  
+          fi  
+  
+      - name: Fetch and build cores  
+        run: |  
+          cd libretro-super  
+          ./libretro-fetch.sh --retroarch  
+          ./libretro-build-ios-arm64.sh  
+          cp -r dist/ios-arm64/*.dylib ../RetroArch/pkg/apple/iOS/modules/  
+  
+      - name: Configure signing  
+        run: |  
+          cd pkg/apple  
+          sed -i '' "s/com\.libretro\.RetroArch/${{ github.event.inputs.bundle_id }}/g" RetroArch_iOS13.xcodeproj/project.pbxproj  
             
-        xcodebuild -exportArchive \  
-          -archivePath build/RetroArch.xcarchive \  
-          -exportPath build/output \  
-          -exportOptionsPlist ExportOptions.plist  
-      
-    - uses: actions/upload-artifact@v4  
-      with:  
-        name: RetroArch-iOS  
-        path: build/output/*.ipa
+      - name: Build RetroArch  
+        run: |  
+          cd pkg/apple  
+          xcodebuild -project RetroArch_iOS13.xcodeproj \  
+            -scheme "RetroArch iOS Release" \  
+            -configuration Release \  
+            -destination generic/platform=iOS \  
+            -xcconfig iOS/GitLabCI.xcconfig \  
+            DEVELOPMENT_TEAM="${{ github.event.inputs.team_id }}" \  
+            CODE_SIGN_IDENTITY="iPhone Developer" \  
+            PROVISIONING_PROFILE_SPECIFIER="" \  
+            build  
+  
+      - name: Archive and Export IPA  
+        run: |  
+          cd pkg/apple  
+          xcodebuild -project RetroArch_iOS13.xcodeproj \  
+            -scheme "RetroArch iOS Release" \  
+            -configuration Release \  
+            -destination generic/platform=iOS \  
+            -archivePath build/RetroArch.xcarchive \  
+            archive  
+            
+          xcodebuild -exportArchive \  
+            -archivePath build/RetroArch.xcarchive \  
+            -exportPath build/output \  
+            -exportOptionsPlist iOS/ExportOptions.plist  
+  
+      - name: Upload IPA  
+        uses: actions/upload-artifact@v3  
+        with:  
+          name: RetroArch-iOS  
+          path: pkg/apple/build/output/*.ipa
