@@ -2,7 +2,7 @@ name: Build Windows x64 Portable
   
 on:  
   push:  
-    branches: [main]  
+    branches: [master]  
   workflow_dispatch:  
   
 permissions:  
@@ -81,10 +81,10 @@ jobs:
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}  
           
         mkdir -p releases/windows-x64  
-        git pull origin main
+        git pull origin master
         # 只提交 portable 包
         cp retroarch-windows-x64-portable.zip releases/windows-x64/  
           
         git add -f releases/windows-x64/retroarch-windows-x64-portable.zip  
         git commit -m "Update Windows x64 portable build - $(date +'%Y-%m-%d')" || exit 0  
-        git push origin HEAD:main
+        git push origin HEAD:master
