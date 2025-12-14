@@ -56,20 +56,26 @@ jobs:
           sed -i '' 's/DEVELOPMENT_TEAM = [A-Z0-9]*/DEVELOPMENT_TEAM = ""/g' RetroArch_iOS13.xcodeproj/project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = ".*"/CODE_SIGN_IDENTITY = ""/g' RetroArch_iOS13.xcodeproj/project.pbxproj
             
-      - name: Build RetroArch (unsigned)
-        run: |
-          cd pkg/apple
-          xcodebuild \
-            -project RetroArch_iOS13.xcodeproj \
-            -scheme "RetroArch iOS Release" \
-            -configuration Release \
-            -destination generic/platform=iOS \
-            -xcconfig iOS/GitLabCI.xcconfig \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            SYMROOT=$PWD/build \
-            build
+      - name: Build RetroArch (unsigned)  
+        run: |  
+          cd pkg/apple  
+          xcodebuild \  
+            -project RetroArch_iOS13.xcodeproj \  
+            -scheme "RetroArch iOS Release" \  
+            -configuration Release \  
+            -destination generic/platform=iOS \  
+            -xcconfig iOS/GitLabCI.xcconfig \  
+            CODE_SIGNING_ALLOWED=NO \  
+            CODE_SIGNING_REQUIRED=NO \  
+            CODE_SIGN_IDENTITY="" \  
+            SYMROOT=$PWD/build \  
+            build  
+        
+      - name: Copy frameworks to app bundle  
+        run: |  
+          cd pkg/apple  
+          # Copy frameworks into the built app  
+          cp -r iOS/Frameworks/* build/Release-iphoneos/RetroArch.app/Frameworks/
   
       - name: Package IPA for TrollStore  
         run: |  
