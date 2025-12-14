@@ -69,20 +69,14 @@ jobs:
         # Remove conflicting OpenGL DLL  
         rm -f retroarch-portable/redist/opengl32.dll
   
-    - name: Create archive  
+    - name: Create archive
       run: |  
-        cd retroarch-portable  
-        zip -r ../retroarch-windows-x64-portable.zip .  
+        cd retroarch-portable
+        zip -r ../retroarch-windows-x64-portable.zip .
   
-    - name: Upload artifact  
-      uses: actions/upload-artifact@v4  
-      with:  
-        name: retroarch-windows-x64-portable  
-        path: retroarch-windows-x64-portable.zip  
-  
-    - name: Commit and push binary (optional)  
-      if: github.event_name == 'push'  
-      run: |  
+    - name: Commit and push binary (optional)
+      if: github.event_name == 'push'
+      run: |
         git config --local user.email "action@github.com"  
         git config --local user.name "GitHub Action"  
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}  
